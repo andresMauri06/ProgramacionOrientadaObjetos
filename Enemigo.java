@@ -56,9 +56,12 @@ public class Enemigo {
 
     public Mejora soltarMejora() {
         Random rand = new Random();
-        String tipoMejora = rand.nextBoolean() ? "vida" : "ataque";
-        int valor = 10;
-        return new Mejora(tipoMejora, valor, this.fila, this.columna);
+        if (rand.nextDouble() < 0.3) {
+            String tipoMejora = rand.nextBoolean() ? "vida" : "ataque";
+            int valor = 10;
+            return new Mejora(tipoMejora, valor, this.fila, this.columna);
+        }
+        return null;
     }
 
     public void mostrarEstado() {
