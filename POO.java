@@ -140,7 +140,7 @@ class Cliente {
         this.email = email;
     }
 
-    // Getters/Setters
+    // Getters - devuelven  Setters modifican
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDni() { return dni; }
@@ -224,7 +224,7 @@ public class Main {
         sc.close();
     }
 
-    // <<< ESTO FALTABA: el método menu() >>>
+    // acceso para private
     private static void menu() {
         System.out.println("\n=== TIENDA DE ROPA ===");
         System.out.println("1. Listar inventario");
@@ -363,4 +363,5 @@ public class Main {
         }
     }
 }
+
 
