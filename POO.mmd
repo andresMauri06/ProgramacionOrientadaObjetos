@@ -1,0 +1,107 @@
+classDiagram
+    %% ====== Clases del dominio ======
+    class Ropa {
+      -int id
+      -String tipo
+      -String talla
+      -double precio
+      +Ropa(int id, String tipo, String talla, double precio)
+      +int getId()
+      +String getTipo()
+      +void setTipo(String)
+      +String getTalla()
+      +void setTalla(String)
+      +double getPrecio()
+      +void setPrecio(double)
+      +String toString()
+    }
+
+    class ItemInventario {
+      -Ropa ropa
+      -int cantidad
+      +ItemInventario(Ropa, int)
+      +Ropa getRopa()
+      +int getCantidad()
+      +void setCantidad(int)
+    }
+
+    class Inventario {
+      -Map~Integer, ItemInventario~ items
+      -int nextId
+      +Ropa agregarRopa(String tipo, String talla, double precio, int cantidad)
+      +boolean existe(int id)
+      +ItemInventario getItem(int id)
+      +List~ItemInventario~ listar()
+      +void reponer(int id, int cant)
+      +boolean descontar(int id, int cant)
+    }
+
+    class LineaPedido {
+      -Ropa ropa
+      -int cantidad
+      +LineaPedido(Ropa, int)
+      +Ropa getRopa()
+      +int getCantidad()
+      +double getSubtotal()
+      +String toString()
+    }
+
+    class Envio {
+      +enum Metodo
+      -String destinatario
+      -String direccion
+      -Metodo metodo
+      +Envio(String destinatario, String direccion, Metodo metodo)
+      +String getDestinatario()
+      +String getDireccion()
+      +Metodo getMetodo()
+      +double costo(double totalProductos)
+      +String toString()
+    }
+
+    class Cliente {
+      -String nombre
+      -String dni
+      -String telefono
+      -String email
+      +Cliente(String, String, String, String)
+      +String getNombre()
+      +void setNombre(String)
+      +String getDni()
+      +void setDni(String)
+      +String getTelefono()
+      +void setTelefono(String)
+      +String getEmail()
+      +void setEmail(String)
+      +String toString()
+    }
+
+    class Pedido {
+      -List~LineaPedido~ lineas
+      -Envio envio
+      -Cliente cliente
+      +void agregarLinea(LineaPedido)
+      +void setEnvio(Envio)
+      +void setCliente(Cliente)
+      +Cliente getCliente()
+      +double totalProductos()
+      +double total()
+      +String recibo()
+    }
+
+    class Main {
+      +static void main(String[] args)
+      <<application>>
+    }
+
+    %% ====== Relaciones (composición/agregación/uso) ======
+    Inventario "1" o-- "many" ItemInventario : contiene
+    ItemInventario "1" *-- "1" Ropa : composición
+    Pedido "1" o-- "many" LineaPedido : contiene
+    LineaPedido "1" *-- "1" Ropa : composición
+    Pedido "1" o-- "1" Envio : envío
+    Pedido "1" o-- "1" Cliente : cliente
+    Envio ..> Metodo : usa
+    Main ..> Inventario : usa
+    Main ..> Pedido : usa/crea
+
