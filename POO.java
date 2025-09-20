@@ -1,5 +1,7 @@
+package Tienda;
 import java.util.*;
 
+// ===================== Modelos =====================
 class Ropa {
     private int id;
     private String tipo;
@@ -13,6 +15,7 @@ class Ropa {
         this.precio = precio;
     }
 
+    // Getters / Setters
     public int getId() { return id; }
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
@@ -140,7 +143,7 @@ class Cliente {
         this.email = email;
     }
 
-    // Getters - devuelven  Setters modifican
+    // Getters/Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getDni() { return dni; }
@@ -197,12 +200,14 @@ class Pedido {
         return sb.toString();
     }
 }
+
+// ===================== App =====================
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
     private static final Inventario inventario = new Inventario();
 
     public static void main(String[] args) {
-      
+        // Carga de ejemplo
         inventario.agregarRopa("Camisa",  "M", 19.99, 10);
         inventario.agregarRopa("Pantalon","L", 29.99, 6);
         inventario.agregarRopa("Vestido", "S", 39.50, 4);
@@ -224,7 +229,7 @@ public class Main {
         sc.close();
     }
 
-    // acceso para private
+    // <<< ESTO FALTABA: el método menu() >>>
     private static void menu() {
         System.out.println("\n=== TIENDA DE ROPA ===");
         System.out.println("1. Listar inventario");
@@ -283,10 +288,12 @@ public class Main {
     Cliente cliente = new Cliente(cNombre, cDni, cTelefono, cEmail);
     pedido.setCliente(cliente);
 
+    // 2) Selección de productos (forzamos al menos 1 línea)
     boolean alMenosUno = false;
     while (true) {
         listarInventario();
 
+        // Leer ID válido
         int id;
         while (true) {
             id = leerInt("ID a agregar: ");
@@ -297,6 +304,7 @@ public class Main {
             }
         }
 
+        // Leer cantidad válida (con stock suficiente)
         int cant;
         while (true) {
             cant = leerInt("Cantidad: ");
@@ -316,12 +324,14 @@ public class Main {
         alMenosUno = true;
         System.out.println("Agregado: " + r.getTipo() + " x" + cant);
 
+        // ¿seguir agregando?
         if (alMenosUno) {
             String seguir = leerStr("¿Agregar otra prenda? (s/n): ");
             if (!seguir.equalsIgnoreCase("s")) break;
         }
     }
 
+    // 3) Datos de envío
     System.out.println("\n-- Datos de envío --");
     String nombre = leerStr("Destinatario: ");
     String direccion = leerStr("Dirección completa: ");
@@ -330,10 +340,12 @@ public class Main {
     Envio.Metodo metodo = (m == 2) ? Envio.Metodo.EXPRESS : Envio.Metodo.ESTANDAR;
     pedido.setEnvio(new Envio(nombre, direccion, metodo));
 
+    // 4) Recibo
     System.out.println("\n" + pedido.recibo());
 }
 
 
+    // ===================== Utilidades de lectura =====================
     private static String leerStr(String msg) {
         System.out.print(msg);
         return sc.nextLine().trim();
@@ -363,5 +375,3 @@ public class Main {
         }
     }
 }
-
-
