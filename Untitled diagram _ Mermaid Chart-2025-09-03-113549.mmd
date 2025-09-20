@@ -1,0 +1,81 @@
+classDiagram
+    class Ropa {
+      -int id
+      -String tipo
+      -String talla
+      -double precio
+      +Ropa(id, tipo, talla, precio)
+      +getId() int
+      +getTipo() String
+      +setTipo(String) void
+      +getTalla() String
+      +setTalla(String) void
+      +getPrecio() double
+      +setPrecio(double) void
+      +toString() String
+    }
+
+    class ItemInventario {
+      -Ropa ropa
+      -int cantidad
+      +ItemInventario(Ropa, int)
+      +getRopa() Ropa
+      +getCantidad() int
+      +setCantidad(int) void
+    }
+
+    class Inventario {
+      -Map~Integer, ItemInventario~ items
+      -int nextId
+      +agregarRopa(String, String, double, int) Ropa
+      +existe(int) boolean
+      +getItem(int) ItemInventario
+      +listar() List~ItemInventario~
+      +reponer(int, int) void
+      +descontar(int, int) boolean
+    }
+
+    class LineaPedido {
+      -Ropa ropa
+      -int cantidad
+      +LineaPedido(Ropa, int)
+      +getRopa() Ropa
+      +getCantidad() int
+      +getSubtotal() double
+      +toString() String
+    }
+
+    class Envio {
+     
+      -String destinatario
+      -String direccion
+      -Metodo metodo
+      +Envio(String, String, Metodo)
+      +getDestinatario() String
+      +getDireccion() String
+      +getMetodo() Metodo
+      +costo(double) double
+      +toString() String
+    }
+
+    class Pedido {
+      -List~LineaPedido~ lineas
+      -Envio envio
+      +agregarLinea(LineaPedido) void
+      +setEnvio(Envio) void
+      +totalProductos() double
+      +total() double
+      +recibo() String
+    }
+
+    class Main {
+      +main(String[]) void
+    }
+
+    Inventario "1" o-- "many" ItemInventario
+    ItemInventario "1" *-- "1" Ropa
+    Pedido "1" o-- "many" LineaPedido
+    LineaPedido "1" *-- "1" Ropa
+    Pedido "1" o-- "1" Envio
+    Main ..> Inventario : usa
+    Main ..> Pedido : crea/usa
