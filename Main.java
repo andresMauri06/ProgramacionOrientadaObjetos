@@ -2,6 +2,7 @@ package Tienda;
 import java.util.*;
 
 // ===================== App =====================
+
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
     private static final Inventario inventario = new Inventario();
@@ -29,7 +30,6 @@ public class Main {
         sc.close();
     }
 
-    // <<< ESTO FALTABA: el método menu() >>>
     private static void menu() {
         System.out.println("\n=== TIENDA DE ROPA ===");
         System.out.println("1. Listar inventario");
@@ -75,77 +75,89 @@ public class Main {
         System.out.println("Precio actualizado.");
     }
 
-   private static void crearPedidoYEnviar() {
-    System.out.println("\n-- Crear pedido --");
-    Pedido pedido = new Pedido();
+    private static void crearPedidoYEnviar() {
+        System.out.println("\n-- Crear pedido --");
+        Pedido pedido = new Pedido();
 
-    // 1) Datos del cliente
-    System.out.println("-- Datos del cliente --");
-    String cNombre   = leerStr("Nombre: ");
-    String cDni      = leerStr("DNI: ");
-    String cTelefono = leerStr("Teléfono: ");
-    String cEmail    = leerStr("Email: ");
-    Cliente cliente = new Cliente(cNombre, cDni, cTelefono, cEmail);
-    pedido.setCliente(cliente);
+        // 1) Datos del cliente
+        System.out.println("-- Datos del cliente --");
+        String cNombre   = leerStr("Nombre: ");
+        String cDni      = leerStr("DNI: ");
+        String cTelefono = leerStr("Teléfono: ");
+        String cEmail    = leerStr("Email: ");
+        Cliente cliente = new Cliente(cNombre, cDni, cTelefono, cEmail);
+        pedido.setCliente(cliente);
 
-    // 2) Selección de productos (forzamos al menos 1 línea)
-    boolean alMenosUno = false;
-    while (true) {
-        listarInventario();
-
-        // Leer ID válido
-        int id;
+        // 2) Selección de productos (forzamos al menos 1 línea)
+        boolean alMenosUno = false;
         while (true) {
-            id = leerInt("ID a agregar: ");
-            if (!inventario.existe(id)) {
-                System.out.println("No existe ese ID. Intenta con uno de la lista (1, 2, 3, ...).");
-            } else {
-                break;
+            listarInventario();
+
+            // Leer ID válido
+            int id;
+            while (true) {
+                id = leerInt("ID a agregar: ");
+                if (!inventario.existe(id)) {
+                    System.out.println("No existe ese ID. Intenta con uno de la lista (1, 2, 3, ...).");
+                } else {
+                    break;
+                }
+            }
+
+            // Leer cantidad válida (con stock suficiente)
+            int cant;
+            while (true) {
+                cant = leerInt("Cantidad: ");
+                if (cant <= 0) {
+                    System.out.println("La cantidad debe ser mayor que 0.");
+                    continue;
+                }
+                if (!inventario.descontar(id, cant)) {
+                    System.out.println("Stock insuficiente. Prueba con otra cantidad.");
+                } else {
+                    break;
+                }
+            }
+
+            Ropa r = inventario.getItem(id).getRopa();
+            pedido.agregarLinea(new LineaPedido(r, cant));
+            alMenosUno = true;
+            System.out.println("Agregado: " + r.getTipo() + " x" + cant);
+
+            // ¿seguir agregando?
+            if (alMenosUno) {
+                String seguir = leerStr("¿Agregar otra prenda? (s/n): ");
+                if (!seguir.equalsIgnoreCase("s")) break;
             }
         }
 
-        // Leer cantidad válida (con stock suficiente)
-        int cant;
-        while (true) {
-            cant = leerInt("Cantidad: ");
-            if (cant <= 0) {
-                System.out.println("La cantidad debe ser mayor que 0.");
-                continue;
-            }
-            if (!inventario.descontar(id, cant)) {
-                System.out.println("Stock insuficiente. Prueba con otra cantidad.");
-            } else {
-                break;
-            }
+        // 3) Datos de envío
+        System.out.println("\n-- Datos de envío --");
+        String nombre = leerStr("Destinatario: ");
+        String direccion = leerStr("Dirección completa: ");
+        System.out.println("Método de envío: 1) ESTANDAR  2) EXPRESS");
+        int m = leerInt("Elige 1 o 2: ");
+        Envio.Metodo metodo = (m == 2) ? Envio.Metodo.EXPRESS : Envio.Metodo.ESTANDAR;
+        pedido.setEnvio(new Envio(nombre, direccion, metodo));
+
+        // 4) Selección del método de pago
+        System.out.println("Método de pago: 1) Tarjeta de crédito  2) PayPal");
+        int metodoPagoSeleccionado = leerInt("Elige 1 o 2: ");
+        if (metodoPagoSeleccionado == 1) {
+            String tarjetaNumero = leerStr("Número de tarjeta: ");
+            String tarjetaNombre = leerStr("Nombre en la tarjeta: ");
+            pedido.setMetodoPago(new PagoConTarjeta(tarjetaNumero, tarjetaNombre));
+        } else if (metodoPagoSeleccionado == 2) {
+            String emailPaypal = leerStr("Email de PayPal: ");
+            pedido.setMetodoPago(new PagoConPaypal(emailPaypal));
         }
 
-        Ropa r = inventario.getItem(id).getRopa();
-        pedido.agregarLinea(new LineaPedido(r, cant));
-        alMenosUno = true;
-        System.out.println("Agregado: " + r.getTipo() + " x" + cant);
-
-        // ¿seguir agregando?
-        if (alMenosUno) {
-            String seguir = leerStr("¿Agregar otra prenda? (s/n): ");
-            if (!seguir.equalsIgnoreCase("s")) break;
-        }
+        // 5) Recibo
+        System.out.println("\n" + pedido.recibo());
     }
 
-    // 3) Datos de envío
-    System.out.println("\n-- Datos de envío --");
-    String nombre = leerStr("Destinatario: ");
-    String direccion = leerStr("Dirección completa: ");
-    System.out.println("Método de envío: 1) ESTANDAR  2) EXPRESS");
-    int m = leerInt("Elige 1 o 2: ");
-    Envio.Metodo metodo = (m == 2) ? Envio.Metodo.EXPRESS : Envio.Metodo.ESTANDAR;
-    pedido.setEnvio(new Envio(nombre, direccion, metodo));
-
-    // 4) Recibo
-    System.out.println("\n" + pedido.recibo());
-}
-
-
     // ===================== Utilidades de lectura =====================
+
     private static String leerStr(String msg) {
         System.out.print(msg);
         return sc.nextLine().trim();
