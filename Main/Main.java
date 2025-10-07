@@ -29,7 +29,7 @@ public class Main {
         sc.close();
     }
 
-    // <<< ESTO FALTABA: el método menu() >>>
+    // Mostrar el menu en pantalla 
     private static void menu() {
         System.out.println("\n=== TIENDA DE ROPA ===");
         System.out.println("1. Listar inventario");
@@ -175,3 +175,4 @@ public class Main {
         }
     }
 }
+
