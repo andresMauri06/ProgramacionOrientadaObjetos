@@ -1,7 +1,6 @@
 package Tienda;
 import java.util.*;
 
-// ===================== App =====================
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
     private static final Inventario inventario = new Inventario();
@@ -175,4 +174,5 @@ public class Main {
         }
     }
 }
+
 
